@@ -1,0 +1,16 @@
+
+
+# Chapa payment integration
+chapa.php
+chapa_*.php
+Chapa.php
+Chapa_*.php
+
+
+# Exclude payment processing files if they contain secret credentials
+process_payment.php
+submit_payment_request.php
+approve_payment_action.php
+verify_payment_action.php
+DBConction.php
+chapa_initialize.php
