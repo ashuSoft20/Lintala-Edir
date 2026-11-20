@@ -1,0 +1,909 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ethiopian Idir | Community Togetherness</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 85px;
+}
+
+body {
+    background: #f8f7f2;
+    color: #26352f;
+    line-height: 1.6;
+}
+
+/* ================= HEADER ================= */
+
+header {
+    background: #104e46;
+    color: white;
+    padding: 16px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+    box-shadow: 0 3px 12px rgba(0,0,0,.12);
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #e5bd64;
+}
+
+/* DESKTOP NAVIGATION */
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: .3s;
+}
+
+nav a:hover {
+    color: #e5bd64;
+}
+
+nav .login {
+    background: #e5bd64;
+    color: #173d35;
+    padding: 10px 20px;
+    border-radius: 7px;
+}
+
+nav .login:hover {
+    background: #f0cc7b;
+    color: #173d35;
+}
+
+/* MENU BUTTON */
+
+.menu-btn {
+    display: none;
+    border: none;
+    background: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* ================= HERO ================= */
+
+.hero {
+    min-height: 490px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 90px 7%;
+    background: linear-gradient(135deg, #e4f1e9, #fffaf0);
+}
+
+.hero-content {
+    max-width: 850px;
+}
+
+.hero .tag {
+    display: inline-block;
+    background: #d6eee3;
+    color: #145b49;
+    padding: 7px 17px;
+    border-radius: 30px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.hero h1 {
+    font-size: 45px;
+    line-height: 1.2;
+    color: #104e46;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #59665f;
+    margin-bottom: 30px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 13px 25px;
+    background: #146b58;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: .3s;
+}
+
+.btn:hover {
+    background: #104e46;
+    transform: translateY(-3px);
+}
+
+/* ================= GENERAL SECTIONS ================= */
+
+.section {
+    padding: 75px 7%;
+}
+
+.section-heading {
+    text-align: center;
+    max-width: 700px;
+    margin: auto;
+}
+
+.section-heading h2 {
+    font-size: 32px;
+    color: #104e46;
+    margin-bottom: 12px;
+}
+
+.section-heading p {
+    color: #66746d;
+}
+
+/* ================= SERVICE CARDS ================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.card {
+    background: white;
+    padding: 30px 24px;
+    border-radius: 14px;
+    border: 1px solid #e7e9e2;
+    box-shadow: 0 5px 18px rgba(0,0,0,.05);
+    transition: .3s;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0,0,0,.09);
+}
+
+.icon {
+    font-size: 38px;
+    margin-bottom: 15px;
+}
+
+.card h3 {
+    color: #146b58;
+    margin-bottom: 12px;
+}
+
+.card p {
+    color: #65716a;
+    font-size: 15px;
+}
+
+/* ================= EQUIPMENT ================= */
+
+.equipment {
+    background: #eaf3ed;
+}
+
+.equipment-card {
+    background: white;
+    padding: 28px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,.05);
+    transition: .3s;
+}
+
+.equipment-card:hover {
+    transform: translateY(-5px);
+}
+
+.equipment-card h3 {
+    color: #146b58;
+    margin: 12px 0;
+}
+
+/* ================= HOW IT WORKS ================= */
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.step {
+    text-align: center;
+    padding: 20px;
+}
+
+.step-number {
+    width: 55px;
+    height: 55px;
+    background: #146b58;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* ================= ABOUT ================= */
+
+.about {
+    background: #fffaf0;
+}
+
+.about-text {
+    max-width: 850px;
+    text-align: center;
+    margin: 25px auto 0;
+    color: #5d685f;
+}
+
+/* ================= CONTACT ================= */
+
+.contact {
+    background: white;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 35px;
+}
+
+.contact-box {
+    background: #f2f7f3;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.contact-box h3 {
+    color: #146b58;
+    margin-bottom: 10px;
+}
+
+/* ================= FOOTER ================= */
+
+footer {
+    background: #103b34;
+    color: white;
+    text-align: center;
+    padding: 25px;
+}
+
+footer span {
+    color: #e5bd64;
+}
+
+/* ================= MOBILE SIDEBAR ================= */
+
+@media (max-width: 768px) {
+
+    header {
+        padding: 15px 5%;
+    }
+
+    .logo {
+        font-size: 19px;
+    }
+
+    /* Show menu button */
+    .menu-btn {
+        display: block;
+        position: relative;
+        z-index: 1202;
+        width: 40px;
+        height: 40px;
+    }
+
+    /* SIDE NAVIGATION */
+    nav {
+        display: flex;
+
+        position: fixed;
+        top: 0;
+        right: 0;
+
+        width: 280px;
+        max-width: 85%;
+        height: 100vh;
+        height: 100dvh;
+
+        background: #104e46;
+
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+
+        padding: 85px 20px 30px;
+        gap: 25px;
+
+        transform: translateX(100%);
+        visibility: hidden;
+
+        transition:
+            transform .35s ease,
+            visibility .35s ease;
+
+        z-index: 1201;
+
+        box-shadow: -5px 0 20px rgba(0,0,0,.2);
+        overflow-y: auto;
+    }
+
+    /* OPEN SIDEBAR */
+    nav.active {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    nav a {
+        margin: 0;
+        font-size: 16px;
+    }
+
+    nav .login {
+        margin-top: 5px;
+    }
+
+    /* DARK BACKGROUND OVERLAY */
+    .nav-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: .3s;
+        z-index: 1199;
+    }
+
+    .nav-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .hero {
+        padding: 75px 6%;
+        min-height: 400px;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .section {
+        padding: 55px 6%;
+    }
+
+    .section-heading h2 {
+        font-size: 27px;
+    }
+}
+
+/* ================= SMALL SCREENS ================= */
+
+@media (max-width: 380px) {
+
+    .logo {
+        font-size: 17px;
+    }
+
+    nav {
+        width: 260px;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+    <div class="logo">
+        LINTALA <span>EDIR</span>
+    </div>
+
+   <button
+    type="button"
+    class="menu-btn"
+    id="menuBtn"
+    aria-label="Open navigation menu"
+    aria-expanded="false"
+    aria-controls="navMenu">
+    ☰
+</button>
+
+    <nav id="navMenu">
+
+        <a href="#home">Home</a>
+
+        <a href="#services">Services</a>
+
+        <a href="#equipment">Equipment</a>
+
+        <a href="#about">About Us</a>
+
+        <a href="#contact">Contact</a>
+
+        <a href="Login.html" class="login">
+            👤 Login
+        </a>
+
+    </nav>
+
+</header>
+
+<!-- SIDEBAR BACKGROUND OVERLAY -->
+
+<div class="nav-overlay" id="navOverlay"></div>
+
+<!-- ================= HOME ================= -->
+
+<section class="hero" id="home">
+
+    <div class="hero-content">
+
+        <div class="tag">
+            Ethiopian Traditional Idir
+        </div>
+
+        <h1>
+            Together We Support Each Other,
+            Together We Are Stronger
+        </h1>
+
+        <p>
+            A community built on unity, shared contributions,
+            traditional values, and mutual support during
+            celebrations and difficult times.
+        </p>
+
+        <a href="#services" class="btn">
+            Discover Our Services →
+        </a>
+
+    </div>
+
+</section>
+
+<!-- ================= SERVICES ================= -->
+
+<section class="section" id="services">
+
+    <div class="section-heading">
+
+        <h2>Our Community Services</h2>
+
+        <p>
+            Supporting our members during important
+            family celebrations and difficult moments.
+        </p>
+
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+
+            <div class="icon">💍</div>
+
+            <h3>Gabicha (ጋብቻ)</h3>
+
+            <p>
+                Providing shared community equipment
+                and support for members during marriage
+                ceremonies.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <div class="icon">🙏</div>
+
+            <h3>Misgana (ምስጋና)</h3>
+
+            <p>
+                Supporting members during thanksgiving
+                and special community ceremonies.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <div class="icon">☕</div>
+
+            <h3>Mels (ምልስ)</h3>
+
+            <p>
+                Sharing community resources and
+                providing assistance during Mels
+                gatherings.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <div class="icon">🕊️</div>
+
+            <h3>Death and Funeral Support</h3>
+
+            <p>
+                Standing together with families during
+                bereavement by providing shared equipment
+                and community assistance.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= EQUIPMENT ================= -->
+
+<section class="section equipment" id="equipment">
+
+    <div class="section-heading">
+
+        <h2>Our Shared Community Equipment</h2>
+
+        <p>
+            Members contribute together to purchase and
+            maintain equipment that is available to all
+            eligible members when needed.
+        </p>
+
+    </div>
+
+    <div class="cards">
+
+        <div class="equipment-card">
+
+            <div class="icon">🪑</div>
+
+            <h3>Chairs (ወንበር)</h3>
+
+            <p>
+                Shared seating equipment for ceremonies.
+            </p>
+
+        </div>
+
+        <div class="equipment-card">
+
+            <div class="icon">⛺</div>
+
+            <h3>Tents (ድንኳን)</h3>
+
+            <p>
+                Community tents for ceremonies and gatherings.
+            </p>
+
+        </div>
+
+        <div class="equipment-card">
+
+            <div class="icon">🍲</div>
+
+            <h3>Cooking Equipment</h3>
+
+            <p>
+                Shared cooking utensils and kitchen equipment.
+            </p>
+
+        </div>
+
+        <div class="equipment-card">
+
+            <div class="icon">🪵</div>
+
+            <h3>Tables (ጠረጴዛ)</h3>
+
+            <p>
+                Tables for family and community events.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+
+<section class="section" id="process">
+
+    <div class="section-heading">
+
+        <h2>How Our Idir Works</h2>
+
+        <p>
+            A simple system based on shared responsibility
+            and community cooperation.
+        </p>
+
+    </div>
+
+    <div class="steps">
+
+        <div class="step">
+
+            <div class="step-number">1</div>
+
+            <h3>Member Contributions</h3>
+
+            <p>
+                Members contribute according to association rules.
+            </p>
+
+        </div>
+
+        <div class="step">
+
+            <div class="step-number">2</div>
+
+            <h3>Collective Purchasing</h3>
+
+            <p>
+                Resources are used to purchase shared equipment.
+            </p>
+
+        </div>
+
+        <div class="step">
+
+            <div class="step-number">3</div>
+
+            <h3>Community Support</h3>
+
+            <p>
+                Members request equipment when ceremonies
+                or emergencies happen.
+            </p>
+
+        </div>
+
+        <div class="step">
+
+            <div class="step-number">4</div>
+
+            <h3>Sharing and Returning</h3>
+
+            <p>
+                Equipment is recorded, used, and returned
+                for other members.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= ABOUT ================= -->
+
+<section class="section about" id="about">
+
+    <div class="section-heading">
+
+        <h2>About Our Idir</h2>
+
+    </div>
+
+    <div class="about-text">
+
+        <p>
+            Idir is a traditional Ethiopian community-based
+            association founded on unity, cooperation,
+            mutual assistance, and shared responsibility.
+
+            Our goal is to bring members together so that
+            nobody faces important life events or difficult
+            times alone.
+        </p>
+
+    </div>
+
+</section>
+
+<!-- ================= CONTACT ================= -->
+
+<section class="section contact" id="contact">
+
+    <div class="section-heading">
+
+        <h2>Contact Our Association</h2>
+
+        <p>
+            For membership information, services,
+            and community assistance, contact us.
+        </p>
+
+    </div>
+
+    <div class="contact-grid">
+
+        <div class="contact-box">
+
+            <h3>📍 Location</h3>
+
+            <p>Association Office</p>
+
+        </div>
+
+        <div class="contact-box">
+
+            <h3>📞 Phone</h3>
+
+            <p>Add official phone number</p>
+
+        </div>
+
+        <div class="contact-box">
+
+            <h3>✉️ Email</h3>
+
+            <p>Add official email address</p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <p>
+        © 2026 <span>ETHIO IDIR</span> | Community First
+    </p>
+
+    <p>
+        Unity • Cooperation • Mutual Support
+    </p>
+
+</footer>
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+const menuBtn = document.getElementById("menuBtn");
+
+const navMenu = document.getElementById("navMenu");
+
+const navOverlay = document.getElementById("navOverlay");
+
+
+/* OPEN SIDEBAR */
+
+function openMenu() {
+
+    navMenu.classList.add("active");
+
+    navOverlay.classList.add("active");
+
+    menuBtn.textContent = "✕";
+
+    menuBtn.setAttribute("aria-expanded", "true");
+
+    menuBtn.setAttribute("aria-label", "Close navigation menu");
+
+    document.body.style.overflow = "hidden";
+}
+
+
+/* CLOSE SIDEBAR */
+
+function closeMenu() {
+
+    navMenu.classList.remove("active");
+
+    navOverlay.classList.remove("active");
+
+    menuBtn.textContent = "☰";
+
+    menuBtn.setAttribute("aria-expanded", "false");
+
+    menuBtn.setAttribute("aria-label", "Open navigation menu");
+
+    document.body.style.overflow = "";
+}
+
+
+/* TOGGLE MENU */
+
+menuBtn.addEventListener("click", function() {
+
+    if (navMenu.classList.contains("active")) {
+
+        closeMenu();
+
+    } else {
+
+        openMenu();
+
+    }
+
+});
+
+
+/* CLOSE WHEN CLICKING OUTSIDE */
+
+navOverlay.addEventListener("click", closeMenu);
+
+
+/* CLOSE AFTER CLICKING A NAVIGATION LINK */
+
+document.querySelectorAll("#navMenu a").forEach(link => {
+
+    link.addEventListener("click", closeMenu);
+
+});
+
+
+/* CLOSE WITH ESCAPE KEY */
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "Escape") {
+
+        closeMenu();
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>

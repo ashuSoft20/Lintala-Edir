@@ -1,0 +1,584 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Contribution Records - Lintala Edir</title>
+
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+
+  <style>
+    .toggle-contributions-btn {
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .toggle-contributions-btn:hover {
+      background-color: #115e59;
+    }
+
+    @media print {
+      .sidebar,
+      header,
+      footer,
+      .toggle-contributions-btn,
+      form,
+      #showStatusBtn {
+        display: none !important;
+      }
+
+      .main-layout {
+        display: block;
+      }
+
+      .content {
+        margin: 0;
+        width: 100%;
+      }
+
+      #contributionsSection {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+    <h2>LinGEdir | Member</h2>
+
+    <div id="welcome-user">
+      👤 Loading...
+    </div>
+  </header>
+
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+      <h3>Member Menu</h3>
+      <a href="membersDashboard.html">🏠 Home</a>
+      <a href="contribution.html">💰 Contribution</a>
+      <a href="punishment.html">💰 Punishment</a>
+      <a href="pay_now.html">💳 Make Payment</a>
+      <a href="payment_history.html">📜 Payment History</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="../Login.html">🚪 Logout</a>
+
+    </div>
+
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Welcome Section -->
+      <div class="welcome-box">
+
+        <h2>Yearly & Monthly Contribution Status</h2>
+
+        <p>
+          Select a year and month, then click
+          <strong>Show Status</strong> to review your payment status.
+        </p>
+
+      </div>
+
+
+      <!-- Year and Month Filters -->
+      <div class="card" style="margin-bottom: 25px;">
+
+        <h3>Select Filtering Options</h3>
+
+        <br>
+
+        <div style="display:flex; gap:15px; align-items:center; flex-wrap:wrap;">
+
+          <!-- Year Filter -->
+          <div>
+
+            <label for="yearFilter">
+              <strong>📅 Year:</strong>
+            </label>
+
+            <br>
+
+            <select id="yearFilter"
+                    style="padding:10px; margin-top:5px; border-radius:6px; border:1px solid #ccc; width:160px;">
+
+              <option value="">Loading years...</option>
+
+            </select>
+
+          </div>
+
+
+          <!-- Month Filter -->
+          <div>
+
+            <label for="monthFilter">
+              <strong>🗓️ Month:</strong>
+            </label>
+
+            <br>
+
+            <select id="monthFilter"
+                    style="padding:10px; margin-top:5px; border-radius:6px; border:1px solid #ccc; width:180px;">
+
+              <option value="ALL">-- All Months --</option>
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+
+            </select>
+
+          </div>
+
+
+          <!-- Show Status Button -->
+          <div style="margin-top:22px;">
+
+            <button type="button"
+                    id="showStatusBtn"
+                    class="btn"
+                    style="border:none; cursor:pointer;">
+
+              Show Status
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Contribution Records -->
+      <div class="card">
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+
+          <h3 style="margin:0;">
+            Contribution Records
+          </h3>
+
+          <button class="toggle-contributions-btn"
+                  onclick="toggleContributionsSection()"
+                  id="contributionsToggleBtn">
+
+            💰 Total Contributions
+
+          </button>
+
+        </div>
+
+
+        <!-- Contribution Table Section -->
+        <div id="contributionsSection"
+             style="display:none; margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+
+          <div id="contributions-table-container">
+
+            <p style="color:#666;">
+              Click <strong>Show Status</strong> above to load records.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Footer -->
+  <footer>
+    © Lintala Edir | Member
+  </footer>
+
+
+  <!-- JavaScript -->
+  <script>
+
+    let isContributionsLoaded = false;
+    let totalContributionsCount = 0;
+
+
+    // Toggle Contribution Records
+    function toggleContributionsSection() {
+
+      const contributionsSec =
+        document.getElementById('contributionsSection');
+
+      const toggleBtn =
+        document.getElementById('contributionsToggleBtn');
+
+ 
+      if (contributionsSec.style.display === 'none') {
+
+        contributionsSec.style.display = 'block';
+
+        toggleBtn.innerText =
+          `🔒 Hide Contributions (${totalContributionsCount})`;
+
+        if (!isContributionsLoaded) {
+
+          loadContributionData();
+
+          isContributionsLoaded = true;
+
+        }
+
+      } else {
+
+        contributionsSec.style.display = 'none';
+
+        toggleBtn.innerText =
+          `💰 Total Contributions (${totalContributionsCount})`;
+
+      }
+
+    }
+
+
+    // Initialize Available Years
+    function initYears() {
+
+      fetch('../get_contributions.php')
+
+        .then(response => response.json())
+
+        .then(data => {
+
+          if (data.status === 'success') {
+
+            document.getElementById('welcome-user').innerText =
+              "👤 " + data.full_name;
+
+
+            const yearFilter =
+              document.getElementById('yearFilter');
+
+            yearFilter.innerHTML = '';
+
+
+            if (data.available_years && data.available_years.length > 0) {
+
+              data.available_years.forEach(year => {
+
+                const option = document.createElement('option');
+
+                option.value = year;
+                option.text = year;
+
+                if (year == data.selected_year) {
+                  option.selected = true;
+                }
+
+                yearFilter.appendChild(option);
+
+              });
+
+            } else {
+
+              yearFilter.innerHTML =
+                '<option value="2026">2026</option>';
+
+            }
+
+
+            // Load Initial Contribution Count
+            preloadContributionsCount();
+
+          } else {
+
+            window.location.href = '../Login.html';
+
+          }
+
+        })
+
+        .catch(error => {
+
+          console.error("Error initializing page:", error);
+
+          document.getElementById('yearFilter').innerHTML =
+            '<option value="2026">2026</option>';
+
+        });
+
+    }
+
+
+    // Load Contribution Records
+    function loadContributionData() {
+
+      const selectedYear =
+        document.getElementById('yearFilter').value;
+
+      const selectedMonth =
+        document.getElementById('monthFilter').value;
+
+      const container =
+        document.getElementById('contributions-table-container');
+
+      container.innerHTML = '<p>Loading records...</p>';
+
+
+      let url = '../get_contributions.php?year=' +
+        encodeURIComponent(selectedYear);
+
+      if (selectedMonth && selectedMonth !== 'ALL') {
+
+        url += '&month=' + encodeURIComponent(selectedMonth);
+
+      }
+
+
+      fetch(url)
+
+        .then(response => response.json())
+
+        .then(data => {
+
+          if (data.status === 'success') {
+
+            if (data.contributions && data.contributions.length > 0) {
+
+              totalContributionsCount =
+                data.contributions.length;
+
+
+              const toggleBtn =
+                document.getElementById('contributionsToggleBtn');
+
+              if (
+                document.getElementById('contributionsSection').style.display !== 'none'
+              ) {
+
+                toggleBtn.innerText =
+                  `🔒 Hide Contributions (${totalContributionsCount})`;
+
+              } else {
+
+                toggleBtn.innerText =
+                  `💰 Total Contributions (${totalContributionsCount})`;
+
+              }
+
+
+              // Create Contribution Table
+              let tableHTML = `
+
+                <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+
+                  <thead>
+
+                    <tr style="background-color:#0f766e; color:white; text-align:left;">
+
+                      <th style="padding:12px; border:1px solid #ddd;">
+                        Month
+                      </th>
+
+                      <th style="padding:12px; border:1px solid #ddd;">
+                        Year
+                      </th>
+
+                      <th style="padding:12px; border:1px solid #ddd;">
+                        Amount Required
+                      </th>
+
+                      <th style="padding:12px; border:1px solid #ddd;">
+                        Payment Date
+                      </th>
+
+                      <th style="padding:12px; border:1px solid #ddd;">
+                        Status
+                      </th>
+
+                    </tr>
+
+                  </thead>
+
+                  <tbody>
+
+              `;
+
+
+              data.contributions.forEach(item => {
+
+                const isPaid =
+                  item.status &&
+                  item.status.toLowerCase() === 'paid';
+
+                const statusBadge = isPaid
+
+                  ? '<span style="color:#16a34a; font-weight:bold;">✅ Paid</span>'
+
+                  : '<span style="color:#dc2626; font-weight:bold;">❌ UnPaid</span>';
+
+
+                tableHTML += `
+
+                  <tr style="border-bottom:1px solid #ddd;">
+
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      <strong>${item.month_name}</strong>
+                    </td>
+
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      ${item.contribution_year}
+                    </td>
+
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      ETB ${item.amount}
+                    </td>
+
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      ${item.payment_date ? item.payment_date : 'N/A'}
+                    </td>
+
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      ${statusBadge}
+                    </td>
+
+                  </tr>
+
+                `;
+
+              });
+
+
+              tableHTML += '</tbody></table>';
+
+              container.innerHTML = tableHTML;
+
+            } else {
+
+              totalContributionsCount = 0;
+
+              document.getElementById('contributionsToggleBtn').innerText =
+                '💰 Total Contributions (0)';
+
+              container.innerHTML = `
+                <p style="margin-top:10px; color:#666;">
+                  No contribution records found for the selected filter.
+                </p>
+              `;
+
+            }
+
+          } else {
+
+            container.innerHTML = `
+              <p style="color:red;">
+                Failed to retrieve data:
+                ${data.message || 'Unauthorized access.'}
+              </p>
+            `;
+
+          }
+
+        })
+
+        .catch(error => {
+
+          console.error("Error loading contributions:", error);
+
+          container.innerHTML = `
+            <p style="color:red;">
+              Error connecting to backend script. Please check console (F12).
+            </p>
+          `;
+
+        });
+
+    }
+
+
+    // Preload Total Contribution Count
+    function preloadContributionsCount() {
+
+      fetch('../get_contributions.php')
+
+        .then(response => response.json())
+
+        .then(data => {
+
+          if (data.status === 'success' && data.contributions) {
+
+            totalContributionsCount =
+              data.contributions.length;
+
+            document.getElementById('contributionsToggleBtn').innerText =
+              `💰 Total Contributions (${totalContributionsCount})`;
+
+          }
+
+        })
+
+        .catch(error => {
+
+          console.error("Error loading contribution count:", error);
+
+        });
+
+    }
+
+
+    // Page Initialization
+    document.addEventListener('DOMContentLoaded', function() {
+
+      // Show Status Button
+      document.getElementById('showStatusBtn').addEventListener('click', function() {
+
+        const section =
+          document.getElementById('contributionsSection');
+
+        section.style.display = 'block';
+
+        loadContributionData();
+
+        isContributionsLoaded = true;
+
+      });
+
+
+      // Initialize Page
+      initYears();
+
+    });
+
+  </script>
+
+
+  <script src="../responsive.js"></script>
+
+</body>
+</html>

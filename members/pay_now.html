@@ -1,0 +1,393 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Make Payment - Lintala Edir</title>
+
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+    <h2>LinGEdir | Member</h2>
+
+    <div id="welcome-user">
+      👤 Loading...
+    </div>
+  </header>
+
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+      <h3>Member Menu</h3>
+      <a href="membersDashboard.html">🏠 Home</a>
+      <a href="contribution.html">💰 Contribution</a>
+      <a href="punishment.html">💰 Punishment</a>
+      <a href="pay_now.html">💳 Make Payment</a>
+      <a href="payment_history.html">📜 Payment History</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="../Login.html">🚪 Logout</a>
+
+    </div>
+
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Welcome Section -->
+      <div class="welcome-box">
+
+        <h2>Complete Your Contribution Payment</h2>
+
+        <p>
+          Review your contribution invoice and securely complete your payment using Chapa.
+        </p>
+
+      </div>
+
+
+      <!-- Payment Card -->
+      <div class="card" style="max-width:600px; margin:20px auto;">
+
+        <h3>Payment Invoice</h3>
+
+        <hr style="margin:15px 0; border:0; border-top:1px solid #ddd;">
+
+        <!-- Payment Details -->
+        <div id="payment-details" style="margin-bottom:20px;">
+
+          <p>Loading invoice information...</p>
+
+        </div>
+
+
+        <!-- Chapa Payment Button -->
+        <button
+          type="button"
+          id="payChapaBtn"
+          onclick="initiateChapaPayment()"
+          class="btn"
+          style="display:none; width:100%; padding:14px; background:#10b981; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:16px;">
+
+          💳 Pay With Chapa
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Footer -->
+  <footer>
+    © Lintala Edir | Member
+  </footer>
+
+
+  <!-- JavaScript -->
+  <script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    let contributionId = urlParams.get('id');
+
+
+    // Load User Information
+    function loadUserHeader() {
+
+      fetch('../get_user.php')
+
+        .then(response => response.json())
+
+        .then(data => {
+
+          if (data.status === 'success' && data.full_name) {
+
+            document.getElementById('welcome-user').innerText =
+              "👤 " + data.full_name;
+
+          } else {
+
+            window.location.href = '../Login.html';
+
+          }
+
+        })
+
+        .catch(error => {
+
+          console.error("Could not load user session:", error);
+
+        });
+
+    }
+
+
+    // Load Payment Invoice
+    function loadInvoice() {
+
+      loadUserHeader();
+
+      if (contributionId) {
+
+        fetchSingleContribution(contributionId);
+
+      } else {
+
+        fetch('../get_active_unpaid_contribution.php')
+
+          .then(response => response.json())
+
+          .then(data => {
+
+            if (data.status === 'success' && data.contribution) {
+
+              contributionId = data.contribution.id;
+
+              renderInvoice(data.full_name, data.contribution);
+
+            } else {
+
+              document.getElementById('payment-details').innerHTML = `
+
+                <p style="color:#666; margin-bottom:12px;">
+                  No pending unpaid contributions found.
+                </p>
+
+                <a href="contribution.html"
+                   style="color:#0f766e; font-weight:bold; text-decoration:underline;">
+
+                  ← Return to Contribution Records
+
+                </a>
+
+              `;
+
+            }
+
+          })
+
+          .catch(error => {
+
+            console.error(error);
+
+            document.getElementById('payment-details').innerHTML = `
+
+              <p style="color:red;">
+                Error loading payment record.
+              </p>
+
+            `;
+
+          });
+
+      }
+
+    }
+
+
+    // Fetch One Contribution
+    function fetchSingleContribution(id) {
+
+      fetch(`../get_single_contribution.php?id=${encodeURIComponent(id)}`)
+
+        .then(response => response.json())
+
+        .then(data => {
+
+          if (data.status === 'success') {
+
+            renderInvoice(data.full_name, data.contribution);
+
+          } else {
+
+            document.getElementById('payment-details').innerHTML = `
+
+              <p style="color:red; margin-bottom:10px;">
+                ${data.message || 'Unable to load contribution record.'}
+              </p>
+
+              <a href="contribution.html"
+                 style="color:#0f766e; font-weight:bold; text-decoration:underline;">
+
+                ← Return to Contribution Records
+
+              </a>
+
+            `;
+
+          }
+
+        })
+
+        .catch(error => {
+
+          console.error("Error fetching contribution:", error);
+
+          document.getElementById('payment-details').innerHTML = `
+
+            <p style="color:red;">
+              Error loading contribution information.
+            </p>
+
+          `;
+
+        });
+
+    }
+
+
+    // Display Payment Invoice
+    function renderInvoice(fullName, item) {
+
+      if (fullName) {
+
+        document.getElementById('welcome-user').innerText =
+          "👤 " + fullName;
+
+      }
+
+
+      const totalAmount = parseFloat(item.amount) || 0;
+
+      const punishmentPrice = parseFloat(item.punishment_price) || 0;
+
+      const baseContribution = totalAmount - punishmentPrice;
+
+
+      document.getElementById('payment-details').innerHTML = `
+
+        <p>
+          <strong>Billing Month:</strong>
+          ${item.month_name} ${item.contribution_year}
+        </p>
+
+        <p>
+          <strong>Base Contribution:</strong>
+          ETB ${baseContribution.toFixed(2)}
+        </p>
+
+        <p>
+          <strong>Punishment Fines:</strong>
+
+          <span style="color:#dc2626;">
+            ETB ${punishmentPrice.toFixed(2)}
+          </span>
+
+        </p>
+
+        <h3 style="margin-top:10px; color:#0f766e;">
+
+          Total Due: ETB ${totalAmount.toFixed(2)}
+
+        </h3>
+
+      `;
+
+
+      document.getElementById('payChapaBtn').style.display = 'block';
+
+    }
+
+
+    // Initiate Chapa Payment
+    function initiateChapaPayment() {
+
+      if (!contributionId) {
+
+        alert("No valid billing record selected.");
+
+        return;
+
+      }
+
+
+      const btn = document.getElementById('payChapaBtn');
+
+      btn.innerText = "Connecting to Chapa...";
+
+      btn.disabled = true;
+
+
+      fetch('../chapa_initialize.php', {
+
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          id: contributionId
+        })
+
+      })
+
+      .then(response => response.json())
+
+      .then(data => {
+
+        if (data.status === 'success' && data.checkout_url) {
+
+          window.location.href = data.checkout_url;
+
+        } else {
+
+          const errMsg = typeof data.message === 'object'
+            ? JSON.stringify(data.message)
+            : data.message;
+
+          alert(
+            "Chapa Gateway Notice: " +
+            (errMsg || "Failed to initialize payment.")
+          );
+
+          btn.innerText = "💳 Pay Securely with Chapa";
+
+          btn.disabled = false;
+
+        }
+
+      })
+
+      .catch(error => {
+
+        console.error("Fetch error:", error);
+
+        alert("Error connecting to backend script.");
+
+        btn.innerText = "💳 Pay Securely with Chapa";
+
+        btn.disabled = false;
+
+      });
+
+    }
+
+
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', function() {
+
+      loadInvoice();
+
+    });
+
+  </script>
+
+
+  <script src="../responsive.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Settings - Lintala Edir</title>
+
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+
+  <style>
+    .profile-card {
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .avatar-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #0f766e;
+      object-fit: cover;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      cursor: zoom-in;
+    }
+
+    .avatar-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.8);
+      cursor: zoom-out;
+    }
+
+    .avatar-modal.open {
+      display: flex;
+    }
+
+    .avatar-modal img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .form-group input[readonly] {
+      background-color: #f1f5f9;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    .alert-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: none;
+      font-weight: bold;
+    }
+
+    .alert-success {
+      background-color: #dcfce7;
+      color: #15803d;
+    }
+
+    .alert-danger {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+
+<body class="member-theme">
+
+  <!-- Header -->
+  <header>
+    <h2>LinGEdir | Member</h2>
+    <div id="welcome-user">
+      <img id="welcome-user-photo" alt="" style="display:none; width:48px; height:48px; margin-right:8px; border-radius:50%; object-fit:cover; vertical-align:middle;">
+      <span id="welcome-user-name">Loading...</span>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h3>Member Menu</h3>
+
+     <a href="membersDashboard.html">🏠 Home</a>
+      <a href="contribution.html">💰 Contribution</a>
+      <a href="punishment.html">💰 Punishment</a>
+      <a href="pay_now.html">💳 Make Payment</a>
+      <a href="payment_history.html">📜 Payment History</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+
+      <div class="welcome-box">
+        <h2>Account & Profile Settings</h2>
+        <p>
+          Update your personal phone number, change your account password,
+          or upload a custom profile image.
+        </p>
+      </div>
+
+      <!-- Profile Settings Card -->
+      <div class="cards" style="display: block;">
+
+        <div class="card profile-card">
+
+          <h3>Update Profile Information</h3>
+          <br>
+
+          <!-- Alert Message -->
+          <div id="alertBox" class="alert-message"></div>
+
+          <!-- Profile Form -->
+          <form
+            id="profileForm"
+            enctype="multipart/form-data"
+            onsubmit="saveProfileChanges(event)"
+          >
+
+            <!-- Profile Image -->
+            <div class="avatar-upload">
+
+              <img
+                id="avatarImage"
+                src="https://via.placeholder.com/120?text=User"
+                alt="Profile Picture"
+                class="avatar-preview"
+              >
+
+              <label
+                for="profile_photo"
+                class="btn"
+                style="padding: 6px 14px; font-size: 13px; cursor: pointer; margin-top: 5px;"
+              >
+                📸 Change Photo
+              </label>
+
+              <input
+                type="file"
+                id="profile_photo"
+                name="profile_photo"
+                accept="image/*"
+                style="display: none;"
+                onchange="previewImage(event)"
+              >
+
+            </div>
+
+            <!-- Username -->
+            <div class="form-group">
+              <label for="username">Username :</label>
+              <input
+                type="text"
+                id="username"
+                readonly
+              >
+            </div>
+
+            <!-- Full Name -->
+            <div class="form-group">
+              <label for="full_name">Full Name:</label>
+              <input
+                type="text"
+                id="full_name"
+                readonly
+              >
+            </div>
+
+            <!-- Phone Number -->
+            <div class="form-group">
+              <label for="phone_number">
+                Phone Number (Telebirr or CBE Wallet):
+              </label>
+
+              <input
+                type="text"
+                id="phone_number"
+                name="phone_number"
+                placeholder="e.g. 0911223344"
+                required
+              >
+            </div>
+
+            <!-- Current Password -->
+            <div class="form-group">
+              <label for="currentPassword">
+                Current Password :
+              </label>
+
+              <input
+                type="password"
+                id="currentPassword"
+                name="current_password"
+                placeholder="Enter current password"
+              >
+            </div>
+
+            <!-- New Password -->
+            <div class="form-group">
+              <label for="newPassword">
+                New Password :
+              </label>
+
+              <input
+                type="password"
+                id="newPassword"
+                name="new_password"
+                placeholder="Enter new password"
+              >
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+              <label for="confirmPassword">
+                Confirm New Password:
+              </label>
+
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirm_password"
+                placeholder="Confirm new password"
+              >
+            </div>
+
+            <!-- Save Button -->
+            <button
+              type="submit"
+              id="saveBtn"
+              class="btn"
+              style="width: 100%; padding: 12px; font-size: 16px; border: none; cursor: pointer;"
+            >
+              💾 Save Profile Changes
+            </button>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © Lintala Edir | Member
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+
+    // Load profile information
+    function loadProfileData() {
+
+      fetch('../update_profile.php')
+        .then(response => response.json())
+        .then(data => {
+
+          if (data.status === 'success') {
+
+            document.getElementById('welcome-user-name').textContent =
+              data.full_name;
+
+            document.getElementById('username').value =
+              data.username || '';
+
+            document.getElementById('full_name').value =
+              data.full_name || '';
+
+            document.getElementById('phone_number').value =
+              data.phone_number || '';
+
+            if (data.profile_photo) {
+              const welcomePhoto =
+                document.getElementById('welcome-user-photo');
+              welcomePhoto.src = '../' + data.profile_photo;
+              welcomePhoto.style.display = 'inline-block';
+
+              document.getElementById('avatarImage').src =
+                '../' + data.profile_photo;
+            }
+
+          } else {
+            window.location.href = '../Login.html';
+          }
+
+        })
+        .catch(error => {
+          console.error('Error loading profile:', error);
+        });
+    }
+
+
+    // Preview selected profile image
+    function previewImage(event) {
+
+      const file = event.target.files[0];
+
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        document.getElementById('avatarImage').src = reader.result;
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+
+    // Save profile changes
+    function saveProfileChanges(event) {
+
+      event.preventDefault();
+
+      const form = document.getElementById('profileForm');
+      const formData = new FormData(form);
+
+      const alertBox = document.getElementById('alertBox');
+      const saveBtn = document.getElementById('saveBtn');
+
+      const currentPassword =
+        document.getElementById('currentPassword').value;
+
+      const newPassword =
+        document.getElementById('newPassword').value;
+
+      const confirmPassword =
+        document.getElementById('confirmPassword').value;
+
+
+      // Validate password confirmation
+      if (newPassword && newPassword !== confirmPassword) {
+
+        alertBox.style.display = 'block';
+        alertBox.className = 'alert-message alert-danger';
+        alertBox.innerText = 'New password and confirmation do not match.';
+
+        return;
+      }
+
+      if (newPassword && !currentPassword) {
+
+        alertBox.style.display = 'block';
+        alertBox.className = 'alert-message alert-danger';
+        alertBox.innerText = 'Please enter your current password.';
+
+        return;
+      }
+
+
+      saveBtn.disabled = true;
+      saveBtn.innerText = 'Saving Changes...';
+
+      alertBox.style.display = 'none';
+
+
+      fetch('../update_profile.php', {
+        method: 'POST',
+        body: formData
+      })
+
+      .then(response => response.json())
+
+      .then(data => {
+
+        saveBtn.disabled = false;
+        saveBtn.innerText = '💾 Save Profile Changes';
+
+        alertBox.style.display = 'block';
+
+        if (data.status === 'success') {
+
+          alertBox.className = 'alert-message alert-success';
+          alertBox.innerText = data.message;
+
+          // Clear password fields after successful update
+          document.getElementById('currentPassword').value = '';
+          document.getElementById('newPassword').value = '';
+          document.getElementById('confirmPassword').value = '';
+
+          // Reload updated profile information
+          loadProfileData();
+
+        } else {
+
+          alertBox.className = 'alert-message alert-danger';
+          alertBox.innerText =
+            data.message || 'An error occurred while updating profile.';
+
+        }
+
+      })
+
+      .catch(error => {
+
+        console.error('Profile update error:', error);
+
+        saveBtn.disabled = false;
+        saveBtn.innerText = '💾 Save Profile Changes';
+
+        alertBox.style.display = 'block';
+        alertBox.className = 'alert-message alert-danger';
+        alertBox.innerText =
+          'Connection error. Could not update profile.';
+
+      });
+    }
+
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function () {
+      loadProfileData();
+
+      const avatar = document.getElementById('avatarImage');
+      const modal = document.getElementById('avatarModal');
+      const enlargedAvatar = document.getElementById('enlargedAvatar');
+
+      avatar.addEventListener('click', function () {
+        enlargedAvatar.src = avatar.src;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+      });
+
+      modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+          modal.classList.remove('open');
+          modal.setAttribute('aria-hidden', 'true');
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal.classList.contains('open')) {
+          modal.classList.remove('open');
+          modal.setAttribute('aria-hidden', 'true');
+        }
+      });
+    });
+
+  </script>
+  <script src="../responsive.js"></script>
+
+  <div id="avatarModal" class="avatar-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Profile photo">
+    <img id="enlargedAvatar" alt="Enlarged profile photo">
+  </div>
+
+</body>
+</html>

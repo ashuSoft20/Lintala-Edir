@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Minutes - Secretary Panel</title>
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+  <style>
+    .toggle-minutes-btn {
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .toggle-minutes-btn:hover { background-color: #115e59; }
+  </style>
+  
+</head>
+<body class="member-theme">
+
+  <header>
+    <h2>LinEdir | Secretary</h2>
+    <div id="welcome-user">👤 Secretary</div>
+  </header>
+
+  <div class="main-layout">
+    
+    <div class="sidebar">
+      <h3>Secretary Menu</h3>
+      <a href="secretary_dashboard.html">🏠 Home</a>
+      <a href="system_users.html">👤 System Users</a>
+      <a href="announcements.html">📢 Announcements</a>
+      <a href="meeting_minutes.html" style="background:#0f766e;">📅 Meeting Minutes</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <div class="content">
+
+      <div class="welcome-box">
+        <h2>Meeting Minutes & Attendance Log</h2>
+        <p>Record meeting summaries, agendas, and discussions.</p>
+      </div>
+
+      <!-- Record New Meeting Form Card -->
+      <div class="card" style="margin-bottom:25px;">
+        <h3>Record New Meeting Minutes</h3><br>
+        <form id="minutesForm" onsubmit="saveMinutes(event)">
+          <div style="display:grid; grid-template-columns: 1fr 2fr; gap:15px; margin-bottom:15px;">
+            <input type="date" id="meeting_date" style="padding:10px; border:1px solid #ccc; border-radius:6px;" required>
+            <input type="text" id="agenda" placeholder="Meeting Agenda Topic" style="padding:10px; border:1px solid #ccc; border-radius:6px;" required>
+          </div>
+          <div style="margin-bottom:15px;">
+            <textarea id="minutes" placeholder="Detailed meeting minutes notes..." rows="4" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;" required></textarea>
+          </div>
+          <button type="submit" class="btn" style="border:none; cursor:pointer; padding:10px 20px;">💾 Save Meeting Record</button>
+        </form>
+      </div>
+
+      <!-- Archived Meeting Records Toggleable Card -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+          <h3 style="margin:0;">Archived Meeting Records</h3>
+          
+          <!-- Dedicated Toggle Button -->
+          <button class="toggle-minutes-btn" onclick="toggleMinutesSection()" id="minutesToggleBtn">
+            📅 Total Meeting Records (0)
+          </button>
+        </div>
+
+        <!-- Hidden Section Containing Records -->
+        <div id="minutesSection" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+          <div id="minutes-container">
+            <p style="color:#666;">Loading records...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>© Lintala Edir | Secretary </footer>
+
+  <script>
+    let isMinutesLoaded = false;
+    let totalMinutesCount = 0;
+
+    // Display logged-in Secretary's full name
+    function loadSecretaryName() {
+      fetch('../get_member_roster.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success' && data.full_name) {
+            document.getElementById('welcome-user').innerText =
+              "👤 " + data.full_name;
+          }
+        })
+        .catch(err => {
+          console.error("Error loading secretary name:", err);
+        });
+    }
+
+    function toggleMinutesSection() {
+      const minutesSec = document.getElementById('minutesSection');
+      const toggleBtn = document.getElementById('minutesToggleBtn');
+
+      if (minutesSec.style.display === 'none') {
+        minutesSec.style.display = 'block';
+        toggleBtn.innerText = `🔒 Hide Meeting Records (${totalMinutesCount})`;
+        
+        if (!isMinutesLoaded) {
+          loadMinutes();
+          isMinutesLoaded = true;
+        }
+      } else {
+        minutesSec.style.display = 'none';
+        toggleBtn.innerText = `📅 Total Meeting Records (${totalMinutesCount})`;
+      }
+    }
+
+    function loadMinutes() {
+      fetch('../manage_minutes.php?action=list')
+        .then(r => r.json())
+        .then(d => {
+          if (d.status === 'success') {
+            const container = document.getElementById('minutes-container');
+            
+            if (d.minutes && d.minutes.length > 0) {
+              totalMinutesCount = d.minutes.length;
+
+              const toggleBtn = document.getElementById('minutesToggleBtn');
+              if (document.getElementById('minutesSection').style.display !== 'none') {
+                toggleBtn.innerText = `🔒 Hide Meeting Records (${totalMinutesCount})`;
+              } else {
+                toggleBtn.innerText = `📅 Total Meeting Records (${totalMinutesCount})`;
+              }
+
+              let h = '';
+              d.minutes.forEach(m => {
+                h += `
+                  <div style="background:#f8fafc; border:1px solid #ddd; padding:15px; border-radius:8px; margin-bottom:10px;">
+                    <strong style="color:#0f766e;">Date: ${m.meeting_date} | Agenda: ${m.agenda}</strong>
+                    <p style="color:#555; margin-top:8px;">${m.minutes}</p>
+                  </div>`;
+              });
+              container.innerHTML = h;
+            } else {
+              container.innerHTML = '<p style="color:#666;">No meeting records found.</p>';
+            }
+          }
+        })
+        .catch(err => {
+          console.error("Error loading meeting minutes:", err);
+          document.getElementById('minutes-container').innerHTML = `<p style="color:red;">Failed to connect to backend server.</p>`;
+        });
+    }
+
+    function saveMinutes(e) {
+      e.preventDefault();
+      fetch('../manage_minutes.php?action=add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          meeting_date: document.getElementById('meeting_date').value,
+          agenda: document.getElementById('agenda').value,
+          minutes: document.getElementById('minutes').value
+        })
+      })
+      .then(r => r.json())
+      .then(res => {
+        alert(res.message); 
+        if (res.status === 'success') { 
+          document.getElementById('minutesForm').reset(); 
+          if (isMinutesLoaded) {
+            loadMinutes();
+          } else {
+            preloadMinutesCount();
+          }
+        }
+      })
+      .catch(err => {
+        console.error("Error saving meeting record:", err);
+        alert("Failed to connect to backend server.");
+      });
+    }
+
+    function preloadMinutesCount() {
+      fetch('../manage_minutes.php?action=list')
+        .then(r => r.json())
+        .then(d => {
+          if (d.status === 'success' && d.minutes) {
+            totalMinutesCount = d.minutes.length;
+            document.getElementById('minutesToggleBtn').innerText = `📅 Total Meeting Records (${totalMinutesCount})`;
+          }
+        })
+        .catch(() => {});
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      preloadMinutesCount();
+      loadSecretaryName();
+    });
+  </script>
+
+  <script src="../responsive.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Punishment Records - Lintala Edir</title>
+
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+
+  <header>
+    <h2>LinGEdir | Member</h2>
+    <div id="welcome-user">👤 Loading...</div>
+  </header>
+
+  <div class="main-layout">
+
+    <div class="sidebar">
+      <h3>Member Menu</h3>
+      <a href="membersDashboard.html">🏠 Home</a>
+      <a href="contribution.html">💰 Contribution</a>
+      <a href="punishment.html">💰 Punishment</a>
+      <a href="pay_now.html">💳 Make Payment</a>
+      <a href="payment_history.html">📜 Payment History</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <div class="content">
+
+      <div class="welcome-box">
+        <h2>Punishment & Fine Standing</h2>
+        <p>Review any fines levied due to missed contributions.</p>
+      </div>
+
+      <div class="cards">
+
+        <div class="card">
+          <h3>Total Unpaid Fines</h3>
+          <p id="total-price" style="margin-top:10px; font-size:22px; font-weight:bold; color:#dc2626;">
+            ETB 0.00
+          </p>
+          <p id="punishment-count-text" style="margin-top:5px; color:#555;">
+            Checking record count...
+          </p>
+        </div>
+
+      </div>
+
+      <div class="card">
+        <h3>Detailed Punishment List</h3>
+        <br>
+        <div id="punishment-table-container">
+          <p>Loading punishment records...</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer>
+    © Lintala Edir | Member
+  </footer>
+
+  <script>
+    function loadPunishmentData() {
+
+      fetch('../get_punishments.php')
+        .then(response => response.json())
+        .then(data => {
+
+          if (data.status === 'success') {
+
+            document.getElementById('welcome-user').innerText =
+              "👤 " + data.full_name;
+
+            document.getElementById('total-price').innerText =
+              "ETB " + Number(data.total_unpaid).toFixed(2);
+
+            const container = document.getElementById('punishment-table-container');
+
+            if (data.punishments && data.punishments.length > 0) {
+
+              document.getElementById('punishment-count-text').innerText =
+                `${data.punishments.length} punishment record(s) found.`;
+
+              let tableHTML = `
+                <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+                  <thead>
+                    <tr style="background-color:#0f766e; color:white; text-align:left;">
+                      <th style="padding:12px; border:1px solid #ddd;">Reason / Type</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Date Issued</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Price / Amount</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Status</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+              `;
+
+              data.punishments.forEach(item => {
+
+                let isPaid = item.status === 'Paid';
+
+                let statusBadge = isPaid
+                  ? '<span style="color:#16a34a; font-weight:bold;">✅ Paid</span>'
+                  : '<span style="color:#dc2626; font-weight:bold;">❌ UnPaid</span>';
+
+                let actionBtn = isPaid
+                  ? '<span style="color:#666;">Cleared</span>'
+                  : `<a href="pay_now.html?type=punishment&id=${encodeURIComponent(item.id)}" class="btn" style="margin:0; padding:6px 12px; font-size:13px;">Pay Fine</a>`;
+
+                tableHTML += `
+                  <tr style="border-bottom:1px solid #ddd;">
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      <strong>${item.reason}</strong>
+                    </td>
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      ${item.punishment_date}
+                    </td>
+                    <td style="padding:12px; border:1px solid #ddd; font-weight:bold;">
+                      ETB ${item.amount}
+                    </td>
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      ${statusBadge}
+                    </td>
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      ${actionBtn}
+                    </td>
+                  </tr>
+                `;
+              });
+
+              tableHTML += `
+                  </tbody>
+                </table>
+              `;
+
+              container.innerHTML = tableHTML;
+
+            } else {
+
+              document.getElementById('punishment-count-text').innerText =
+                "No outstanding punishments.";
+
+              container.innerHTML = `
+                <p style="margin-top:10px; color:#16a34a; font-weight:bold;">
+                  🎉 No punishments or fines recorded for your account!
+                </p>
+              `;
+            }
+
+          } else {
+            window.location.href = '../Login.html';
+          }
+
+        })
+        .catch(error => {
+          console.error("Error loading punishments:", error);
+
+          document.getElementById('punishment-table-container').innerHTML = `
+            <p style="color:red;">
+              Error connecting to server backend.
+            </p>
+          `;
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadPunishmentData);
+  </script>
+<script src="../responsive.js"></script>
+</body>
+</html>

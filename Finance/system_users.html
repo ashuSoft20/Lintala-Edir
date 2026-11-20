@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Member Registrations - Lintala Edir Finance Panel</title>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+
+  <style>
+    .toggle-members-btn {
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .toggle-members-btn:hover { background-color: #115e59; }
+
+    @media print {
+      .sidebar, header, .toggle-members-btn { display: none !important; }
+      .main-layout { display: block; }
+      .content { margin: 0; width: 100%; }
+      #membersSection { display: block !important; }
+    }
+  </style>
+
+</head>
+<body class="member-theme">
+
+  <!-- Top Header -->
+  <header>
+    <h2>LinGEdir | Finance</h2>
+    <div id="welcome-user">👤 Finance</div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Left Sidebar Menu -->
+    <div class="sidebar">
+      <h3>Finance Menu</h3>
+      <a href="finance_dashboard.html">🏠 Home</a>
+      <a href="member_contribution_overview.html">👥 Monthly Contribution</a>
+      <a href="contribution_records.html">📋 Contribution Records</a>
+      <a href="financial_statements.html">📉 Financial Statements</a>
+      <a href="system_users.html">👤👤 System Users</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content">
+
+      <div class="welcome-box">
+        <h2>Member Roster & Registrations</h2>
+        <p>View active member accounts.</p>
+      </div>
+
+      <!-- Master Member Roster Card with Toggle Button -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+          <h3 style="margin: 0;">Member Roster</h3>
+          
+          <!-- Dedicated Toggle Button -->
+          <button class="toggle-members-btn" onclick="toggleMembersSection()" id="membersToggleBtn">
+            👥 Total Members
+          </button>
+        </div>
+
+        <!-- Hidden Section Containing Table -->
+        <div id="membersSection" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+          <div id="members-table-container">
+            <p style="color:#666;">Loading member roster...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © Lintala Edir | Finance
+  </footer>
+
+  <!-- JavaScript to Handle Toggle and Roster Loading -->
+  <script>
+    let isMembersLoaded = false;
+    let totalMembersCount = 0;
+
+    function toggleMembersSection() {
+      const membersSec = document.getElementById('membersSection');
+      const toggleBtn = document.getElementById('membersToggleBtn');
+
+      if (membersSec.style.display === 'none') {
+        membersSec.style.display = 'block';
+        toggleBtn.innerText = `🔒 Hide Member Roster (${totalMembersCount})`;
+        
+        if (!isMembersLoaded) {
+          loadMemberRoster();
+          isMembersLoaded = true;
+        }
+      } else {
+        membersSec.style.display = 'none';
+        toggleBtn.innerText = `👥 Total Members (${totalMembersCount})`;
+      }
+    }
+
+    function loadMemberRoster() {
+      fetch('../get_member_roster.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            if (data.full_name) {
+              document.getElementById('welcome-user').innerText = "👤 " + data.full_name;
+            }
+
+            const container = document.getElementById('members-table-container');
+
+            if (data.members && data.members.length > 0) {
+              totalMembersCount = data.members.length;
+              
+              // Update button text with count once loaded
+              const toggleBtn = document.getElementById('membersToggleBtn');
+              if (document.getElementById('membersSection').style.display !== 'none') {
+                toggleBtn.innerText = `🔒 Hide Member Roster (${totalMembersCount})`;
+              } else {
+                toggleBtn.innerText = `👥 Total Members (${totalMembersCount})`;
+              }
+
+              let tableHTML = `
+                <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+                  <thead>
+                    <tr style="background-color:#0f766e; color:white; text-align:left;">
+                      <th style="padding:12px; border:1px solid #ddd; width:60px;">ID</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Full Name</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Username (Email)</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Phone Number</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Registered Date</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+              `;
+
+              data.members.forEach(member => {
+                tableHTML += `
+                  <tr style="border-bottom:1px solid #ddd;">
+                    <td style="padding:12px; border:1px solid #ddd;">${member.id}</td>
+                    <td style="padding:12px; border:1px solid #ddd;"><strong>${member.full_name}</strong></td>
+                    <td style="padding:12px; border:1px solid #ddd;">${member.username}</td>
+                    <td style="padding:12px; border:1px solid #ddd;">${member.phone || 'N/A'}</td>
+                    <td style="padding:12px; border:1px solid #ddd;">${member.created_at || 'N/A'}</td>
+                    <td style="padding:12px; border:1px solid #ddd;">${member.role}</td>
+                  </tr>
+                `;
+              });
+
+              tableHTML += '</tbody></table>';
+              container.innerHTML = tableHTML;
+            } else {
+              container.innerHTML = `<p style="color:#666;">No members found in the roster.</p>`;
+            }
+          } else {
+            alert("Unauthorized access.");
+            window.location.href = '../Login.html';
+          }
+        })
+        .catch(err => {
+          console.error("Error loading member roster:", err);
+          document.getElementById('members-table-container').innerHTML = `<p style="color:red;">Failed to connect to backend server.</p>`;
+        });
+    }
+
+    // Preload count on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch('../get_member_roster.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            if (data.full_name) {
+              document.getElementById('welcome-user').innerText = "👤 " + data.full_name;
+            }
+            if (data.members) {
+              totalMembersCount = data.members.length;
+              document.getElementById('membersToggleBtn').innerText = `👥 Total Members (${totalMembersCount})`;
+            }
+          }
+        })
+        .catch(() => {});
+    });
+  </script>
+
+
+<script src="../responsive.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contribution Records - Lintala Edir Finance Panel</title>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+
+  <style>
+    .filter-bar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-bar select, .filter-bar input {
+      padding: 9px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+    }
+    .badge-paid {
+      color: #15803d;
+      background: #dcfce7;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .badge-unpaid {
+      color: #b91c1c;
+      background: #fee2e2;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .badge-xxx {
+      color: #ca8a04;
+      background: #fef9c3;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .btn-action {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-pay { background-color: #16a34a; color: white; }
+    .btn-action:hover { opacity: 0.85; }
+
+    .toggle-records-btn {
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .toggle-records-btn:hover { background-color: #115e59; }
+
+    @media print {
+      .sidebar, header, .toggle-records-btn, .filter-bar { display: none !important; }
+      .main-layout { display: block; }
+      .content { margin: 0; width: 100%; }
+      #recordsSection { display: block !important; }
+    }
+  </style>
+
+</head>
+<body class="member-theme">
+
+  <!-- Top Header -->
+  <header>
+    <h2>LinGEdir | Finance Panel</h2>
+    <div id="welcome-user">👤 Finance</div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Left Sidebar Menu -->
+    <div class="sidebar">
+      <h3>Finance Menu</h3>
+      <a href="finance_dashboard.html">🏠 Home</a>
+      <a href="member_contribution_overview.html">👥Monthly Contribution</a>
+      <a href="contribution_records.html">📋 Contribution Records</a>
+      <a href="financial_statements.html">📉 Financial Statements</a>
+      <a href="system_users.html">👤👤 System Users</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content">
+
+      <div class="welcome-box">
+        <h2>Contribution Records</h2>
+        <p>Monitor and audit all monthly contributions across all registered members</p>
+      </div>
+
+      <!-- Contribution Records Card with Toggle Button -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+          <h3 style="margin: 0;">Contribution Ledger & Filters</h3>
+          
+          <!-- Dedicated Toggle Button -->
+          <button class="toggle-records-btn" onclick="toggleRecordsSection()" id="recordsToggleBtn">
+            📋 View Contribution Records
+          </button>
+        </div>
+
+        <!-- Hidden Container (Contains Filters & Table) -->
+        <div id="recordsSection" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+          
+          <!-- Filter Controls -->
+          <div class="filter-bar">
+            <div>
+              <label><strong>Select Year:</strong></label>
+              <select id="yearSelect" onchange="filterRecords()">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div>
+              <label><strong>Select Month:</strong></label>
+              <select id="monthSelect" onchange="filterRecords()">
+                <option value="ALL">-- All Months --</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+              </select>
+            </div>
+            <div>
+              <label><strong>Search Member:</strong></label>
+              <input type="text" id="memberSearch" placeholder="Search username or email..." onkeyup="filterTableSearch()" style="width: 230px;">
+            </div>
+          </div>
+
+          <div id="records-table-container">
+            <p style="color:#666;">Loading contribution records...</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © Lintala Edir | Finance
+  </footer>
+
+  <!-- JavaScript to Fetch, Filter, Search, and Update Records -->
+  <script>
+    let isRecordsLoaded = false;
+
+    function toggleRecordsSection() {
+      const recordsSec = document.getElementById('recordsSection');
+      const toggleBtn = document.getElementById('recordsToggleBtn');
+
+      if (recordsSec.style.display === 'none') {
+        recordsSec.style.display = 'block';
+        toggleBtn.innerText = '🔒 Hide Contribution Records';
+        
+        if (!isRecordsLoaded) {
+          loadContributionRecords();
+          isRecordsLoaded = true;
+        }
+      } else {
+        recordsSec.style.display = 'none';
+        toggleBtn.innerText = '📋 View Contribution Records';
+      }
+    }
+
+    function loadContributionRecords(year = '', month = '') {
+      let url = '../get_all_contributions.php?';
+      if (year) url += `year=${year}&`;
+      if (month) url += `month=${month}`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            document.getElementById('welcome-user').innerText = "👤 " + data.full_name;
+
+            // Populate Year Dropdown if empty
+            const yearSelect = document.getElementById('yearSelect');
+            if (yearSelect.children.length === 0 && data.available_years) {
+              data.available_years.forEach(yr => {
+                let opt = document.createElement('option');
+                opt.value = yr;
+                opt.textContent = yr;
+                if (yr == data.selected_year) opt.selected = true;
+                yearSelect.appendChild(opt);
+              });
+            }
+
+            const container = document.getElementById('records-table-container');
+
+            if (data.contributions && data.contributions.length > 0) {
+              let tableHTML = `
+                <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+                  <thead>
+                    <tr style="background-color:#0f766e; color:white; text-align:left;">
+                      <th style="padding:12px; border:1px solid #ddd;">Member Username</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Month</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Year</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Amount</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Payment Date</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Status</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+              `;
+
+              data.contributions.forEach(item => {
+                let statusBadge = '';
+                if (item.status === 'Paid') {
+                  statusBadge = `<span class="badge-paid">✅ Paid</span>`;
+                } else if (item.status === 'XXX') {
+                  statusBadge = `<span class="badge-xxx">⚡ XXX</span>`;
+                } else {
+                  statusBadge = `<span class="badge-unpaid">⏳ ${item.status}</span>`;
+                }
+
+                // Action buttons configuration: only Mark Paid button for UnPaid status
+                let actionButtons = '';
+                if (item.status === 'UnPaid') {
+                  actionButtons = `
+                    <button class="btn-action btn-pay" onclick="updateRecordStatus(${item.id}, 'Paid')">Mark Paid</button>
+                  `;
+                } else {
+                  actionButtons = `<span style="color:#888; font-size:12px;">No Actions</span>`;
+                }
+
+                tableHTML += `
+                  <tr style="border-bottom:1px solid #ddd;">
+                    <td style="padding:12px; border:1px solid #ddd;"><strong>${item.username}</strong></td>
+                    <td style="padding:12px; border:1px solid #ddd;">${item.month_name}</td>
+                    <td style="padding:12px; border:1px solid #ddd;">${item.contribution_year}</td>
+                    <td style="padding:12px; border:1px solid #ddd; font-weight:bold; color:#0f766e;">ETB ${item.amount}</td>
+                    <td style="padding:12px; border:1px solid #ddd;">${item.payment_date ? item.payment_date : 'N/A'}</td>
+                    <td style="padding:12px; border:1px solid #ddd;">${statusBadge}</td>
+                    <td style="padding:12px; border:1px solid #ddd;">${actionButtons}</td>
+                  </tr>
+                `;
+              });
+
+              tableHTML += '</tbody></table>';
+              container.innerHTML = tableHTML;
+              
+              filterTableSearch();
+            } else {
+              container.innerHTML = `<p style="margin-top:15px; color:#666;">No contribution records match the selected filter criteria.</p>`;
+            }
+          } else {
+            alert("Unauthorized access.");
+            window.location.href = '../Login.html';
+          }
+        })
+        .catch(err => {
+          console.error("Error loading contribution records:", err);
+          document.getElementById('records-table-container').innerHTML = `<p style="color:red;">Error connecting to backend server.</p>`;
+        });
+    }
+
+    function filterRecords() {
+      const year = document.getElementById('yearSelect').value;
+      const month = document.getElementById('monthSelect').value;
+      loadContributionRecords(year, month);
+    }
+
+    function filterTableSearch() {
+      const input = document.getElementById('memberSearch');
+      const filter = input.value.toLowerCase();
+      const table = document.querySelector('#records-table-container table');
+      
+      if (!table) return;
+      
+      const rows = table.getElementsByTagName('tr');
+
+      for (let i = 1; i < rows.length; i++) {
+        let usernameCell = rows[i].getElementsByTagName('td')[0];
+        if (usernameCell) {
+          let textValue = usernameCell.textContent || usernameCell.innerText;
+          if (textValue.toLowerCase().indexOf(filter) > -1) {
+            rows[i].style.display = "";
+          } else {
+            rows[i].style.display = "none";
+          }
+        }
+      }
+    }
+
+    function updateRecordStatus(recordId, newStatus) {
+      if (!confirm(`Are you sure you want to mark this record as Paid?`)) return;
+
+      fetch('../update_contribution_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: recordId, status: newStatus })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          filterRecords();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(err => {
+        console.error('Error updating status:', err);
+        alert('Failed to connect to the backend server.');
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Preload years silently on page start without opening the ledger container
+      fetch('../get_all_contributions.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            document.getElementById('welcome-user').innerText = "👤 " + data.full_name;
+            const yearSelect = document.getElementById('yearSelect');
+            if (yearSelect.children.length === 0 && data.available_years) {
+              data.available_years.forEach(yr => {
+                let opt = document.createElement('option');
+                opt.value = yr;
+                opt.textContent = yr;
+                if (yr == data.selected_year) opt.selected = true;
+                yearSelect.appendChild(opt);
+              });
+            }
+          }
+        });
+    });
+  </script>
+
+
+<script src="../script.js"></script>
+<script src="../responsive.js"></script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment History - Lintala Edir</title>
+
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+
+  <style>
+    .toggle-history-btn {
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .toggle-history-btn:hover {
+      background-color: #115e59;
+    }
+
+    @media print {
+      .sidebar,
+      header,
+      footer,
+      .toggle-history-btn {
+        display: none !important;
+      }
+
+      .main-layout {
+        display: block;
+      }
+
+      .content {
+        margin: 0;
+        width: 100%;
+      }
+
+      #historySection {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="member-theme">
+
+  <!-- Header -->
+  <header>
+    <h2>LinGEdir | Member</h2>
+    <div id="welcome-user">👤 Loading...</div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h3>Member Menu</h3>
+      <a href="membersDashboard.html">🏠 Home</a>
+      <a href="contribution.html">💰 Contribution</a>
+      <a href="punishment.html">💰 Punishment</a>
+      <a href="pay_now.html">💳 Make Payment</a>
+      <a href="payment_history.html">📜 Payment History</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+
+      <div class="welcome-box">
+        <h2>Completed Transaction History</h2>
+        <p>
+          A full log of all paid monthly contributions and cleared fine
+          payments associated with your account.
+        </p>
+      </div>
+
+      <div class="cards" style="display: block;">
+
+        <div class="card" style="width: 100%;">
+
+          <!-- Payment History Header -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+
+            <h3 style="color: #0f766e; margin: 0;">
+              Receipt & Payment Log
+            </h3>
+
+            <button
+              class="toggle-history-btn"
+              onclick="toggleHistorySection()"
+              id="historyToggleBtn"
+              type="button">
+              📋 Total Transactions (0)
+            </button>
+
+          </div>
+
+          <!-- Payment History Table -->
+          <div
+            id="historySection"
+            style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+
+            <div id="receiptPaymentLog">
+              <p style="color: #666;">
+                Loading transaction history...
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © Lintala Edir | Member
+  </footer>
+
+  <script>
+    let isHistoryLoaded = false;
+    let totalTransactionsCount = 0;
+
+    // Toggle payment history visibility
+    function toggleHistorySection() {
+      const historySection = document.getElementById('historySection');
+      const toggleButton = document.getElementById('historyToggleBtn');
+
+      if (historySection.style.display === 'none') {
+        historySection.style.display = 'block';
+
+        toggleButton.innerText =
+          `🔒 Hide Transactions (${totalTransactionsCount})`;
+
+        if (!isHistoryLoaded) {
+          loadPaymentHistory();
+          isHistoryLoaded = true;
+        }
+
+      } else {
+        historySection.style.display = 'none';
+
+        toggleButton.innerText =
+          `📋 Total Transactions (${totalTransactionsCount})`;
+      }
+    }
+
+    // Fetch logged-in user information
+    function fetchUserInfo() {
+      fetch('../get_user.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            document.getElementById('welcome-user').innerText =
+              '👤 ' + data.full_name;
+          } else {
+            window.location.href = '../Login.html';
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error);
+        });
+    }
+
+    // Load payment history
+    function loadPaymentHistory() {
+      fetch('../get_payment_history.php')
+        .then(response => response.json())
+        .then(data => {
+          const logContainer =
+            document.getElementById('receiptPaymentLog');
+
+          if (data.status === 'success') {
+
+            if (!data.payments || data.payments.length === 0) {
+              totalTransactionsCount = 0;
+
+              document.getElementById('historyToggleBtn').innerText =
+                '🔒 Hide Transactions (0)';
+
+              logContainer.innerHTML = `
+                <p style="color: #666; padding: 15px;">
+                  No completed payment records found for your account.
+                </p>
+              `;
+              return;
+            }
+
+            totalTransactionsCount = data.payments.length;
+
+            document.getElementById('historyToggleBtn').innerText =
+              `🔒 Hide Transactions (${totalTransactionsCount})`;
+
+            let html = `
+              <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+
+                <thead>
+                  <tr style="background: #0f766e; color: white; text-align: left;">
+                    <th style="padding: 10px;">Type</th>
+                    <th style="padding: 10px;">Details</th>
+                    <th style="padding: 10px;">Amount</th>
+                    <th style="padding: 10px;">Status</th>
+                    <th style="padding: 10px;">Date</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+            `;
+
+            data.payments.forEach(payment => {
+              html += `
+                <tr style="border-bottom: 1px solid #ddd;">
+
+                  <td style="padding: 10px; font-weight: bold; color: #0f766e;">
+                    ${payment.type}
+                  </td>
+
+                  <td style="padding: 10px;">
+                    ${payment.description}
+                  </td>
+
+                  <td style="padding: 10px;">
+                    ETB ${parseFloat(payment.amount).toFixed(2)}
+                  </td>
+
+                  <td style="padding: 10px; color: #10b981; font-weight: bold;">
+                    ✔ ${payment.status}
+                  </td>
+
+                  <td style="padding: 10px;">
+                    ${payment.date}
+                  </td>
+
+                </tr>
+              `;
+            });
+
+            html += `
+                </tbody>
+              </table>
+            `;
+
+            logContainer.innerHTML = html;
+
+          } else {
+            logContainer.innerHTML = `
+              <p style="color: red; padding: 15px;">
+                Error: ${data.message}
+              </p>
+            `;
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching payment history:', error);
+
+          document.getElementById('receiptPaymentLog').innerHTML = `
+            <p style="color: red; padding: 15px;">
+              Error connecting to backend server.
+            </p>
+          `;
+        });
+    }
+
+    // Preload transaction count
+    function preloadTransactionCount() {
+      fetch('../get_payment_history.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success' && data.payments) {
+            totalTransactionsCount = data.payments.length;
+
+            document.getElementById('historyToggleBtn').innerText =
+              `📋 Total Transactions (${totalTransactionsCount})`;
+          }
+        })
+        .catch(error => {
+          console.error('Error loading transaction count:', error);
+        });
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchUserInfo();
+      preloadTransactionCount();
+    });
+  </script>
+
+  <script src="../responsive.js"></script>
+
+</body>
+</html>

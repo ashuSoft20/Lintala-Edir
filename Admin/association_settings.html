@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Association Settings - Lintala Edir Admin</title>
+
+  <!-- Dashboard Stylesheet -->
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+
+  <style>
+    .settings-card {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    .alert-box {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      display: none;
+      font-weight: bold;
+    }
+    .alert-success { background-color: #dcfce7; color: #15803d; }
+    .alert-danger { background-color: #fee2e2; color: #b91c1c; }
+  </style>
+
+</head>
+<body class="member-theme">
+
+  <!-- Header -->
+  <header>
+    <h2>LinGEdir | Admin</h2>
+    <div id="welcome-user">👤 Admin</div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Left Sidebar Menu -->
+    <div class="sidebar">
+      <h3>Admin Menu</h3>
+      <a href="admin_dashboard.html">🏠 Home</a>
+      <a href="manage_users.html">👥 Manage Users</a>
+      <a href="association_settings.html">⚙️ Association Settings</a>
+      <a href="system_reports.html">📊 System Reports</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="system_users.html">👤👤 System Users</a>
+
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content">
+
+      <div class="welcome-box">
+        <h2> Association  Rules</h2>
+        <p>Set default values for mandatory contributions, late fine rates, and payment schedule deadlines.</p>
+      </div>
+
+      <!-- Association Form Card -->
+      <div class="card settings-card">
+        <h3>System Rules & Defaults</h3>
+        <br>
+
+        <div id="alertBox" class="alert-box"></div>
+
+        <form id="settingsForm" onsubmit="saveAssociationSettings(event)">
+          
+          <div class="form-group">
+            <label for="association_name">Association Official Name:</label>
+            <input type="text" id="association_name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="monthly_contribution"> Monthly Contribution Amount (ETB):</label>
+            <input type="number" step="0.01" id="monthly_contribution" placeholder="e.g. 100.00" required>
+          </div>
+
+          <div class="form-group">
+            <label for="late_punishment_fee">Standard Late Fine Punishment Amount (ETB):</label>
+            <input type="number" step="0.01" id="late_punishment_fee" placeholder="e.g. 50.00" required>
+          </div>
+
+          <div class="form-group">
+            <label for="payment_due_day">Constant Monthly Payment:</label>
+            <input type="number" min="1" max="31" id="payment_due_day" placeholder="e.g. 10" required>
+          </div>
+
+          <div class="form-group">
+            <label for="currency">Default System Currency:</label>
+            <select id="currency">
+              <option value="ETB">ETB - Ethiopian Birr</option>
+              <option value="USD">USD - US Dollar</option>
+            </select>
+          </div>
+
+          <button type="submit" id="saveBtn" class="btn" style="width: 100%; padding: 12px; font-size: 16px; border: none; cursor: pointer;">
+            💾 Save Settings
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © Lintala Edir | Admin
+  </footer>
+
+  <!-- JavaScript to Handle Configuration Updates -->
+  <script>
+    // Load existing settings from DB on DOM ready
+    function loadSettings() {
+      fetch('../update_association_settings.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            const cfg = data.settings;
+            document.getElementById('association_name').value = cfg.association_name;
+            document.getElementById('monthly_contribution').value = cfg.monthly_contribution;
+            document.getElementById('late_punishment_fee').value = cfg.late_punishment_fee;
+            document.getElementById('payment_due_day').value = cfg.payment_due_day;
+            document.getElementById('currency').value = cfg.currency;
+          } else {
+            alert(data.message || "Unauthorized access.");
+            window.location.href = '../Login.html';
+          }
+        })
+        .catch(err => console.error("Error loading settings:", err));
+    }
+
+    // Save updated configuration settings
+    function saveAssociationSettings(e) {
+      e.preventDefault();
+
+      const saveBtn = document.getElementById('saveBtn');
+      const alertBox = document.getElementById('alertBox');
+
+      saveBtn.disabled = true;
+      saveBtn.innerText = "Saving Configuration...";
+
+      const payload = {
+        association_name: document.getElementById('association_name').value,
+        monthly_contribution: document.getElementById('monthly_contribution').value,
+        late_punishment_fee: document.getElementById('late_punishment_fee').value,
+        payment_due_day: document.getElementById('payment_due_day').value,
+        currency: document.getElementById('currency').value
+      };
+
+      fetch('../update_association_settings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(res => {
+        saveBtn.disabled = false;
+        saveBtn.innerText = "💾 Save Settings";
+        alertBox.style.display = 'block';
+
+        if (res.status === 'success') {
+          alertBox.className = 'alert-box alert-success';
+          alertBox.innerText = res.message;
+        } else {
+          alertBox.className = 'alert-box alert-danger';
+          alertBox.innerText = res.message || "Error saving configurations.";
+        }
+      })
+      .catch(err => {
+        console.error("Save Error:", err);
+        saveBtn.disabled = false;
+        saveBtn.innerText = "💾 Save Settings";
+        alertBox.style.display = 'block';
+        alertBox.className = 'alert-box alert-danger';
+        alertBox.innerText = "Connection error while updating settings.";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadSettings);
+  </script>
+
+
+<script src="../script.js"></script>
+<script src="../responsive.js"></script>
+
+</body>
+</html>

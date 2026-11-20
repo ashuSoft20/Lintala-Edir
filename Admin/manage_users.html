@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Users - Lintala Edir Admin</title>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+
+  <style>
+    .action-btn-update {
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-right: 4px;
+    }
+    .action-btn-update:hover { background-color: #115e59; }
+
+    .action-btn-edit {
+      background-color: #0284c7;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-right: 4px;
+    }
+    .action-btn-edit:hover { background-color: #0369a1; }
+    
+    .action-btn-danger {
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .action-btn-danger:hover { background-color: #b91c1c; }
+
+    .edit-input {
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      width: 90%;
+    }
+    .role-select {
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .form-grid input, .form-grid select {
+      padding: 9px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+    }
+
+    .toggle-users-btn {
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .toggle-users-btn:hover { background-color: #115e59; }
+
+    .role-badge {
+      background-color: #f3f4f6;
+      color: #374151;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+  </style>
+
+</head>
+<body class="member-theme">
+
+  <!-- Top Header -->
+  <header>
+    <h2>LinGEdir | Admin</h2>
+    <div id="welcome-user">👤 Admin</div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Left Sidebar Menu -->
+    <div class="sidebar">
+      <h3>Admin Menu</h3>
+     <a href="admin_dashboard.html">🏠 Home</a>
+      <a href="manage_users.html">👥 Manage Users</a>
+      <a href="association_settings.html">⚙️ Association Settings</a>
+      <a href="system_reports.html">📊 System Reports</a>
+      <a href="profile.html">👤 Profile Settings</a>
+      <a href="system_users.html">👤👤 System Users</a>
+
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content">
+
+      <div class="welcome-box">
+        <h2>User Account Management</h2>
+        <p>View registered system accounts, update user details, assign role permissions, or add new members.</p>
+      </div>
+
+      <!-- Add New User Card -->
+      <div class="card" style="margin-bottom: 25px;">
+        <h3>Register New System User</h3>
+        <br>
+        <form id="addUserForm" onsubmit="createNewUser(event)">
+          <div class="form-grid">
+            <div>
+              <label><strong>Username (Email):</strong></label>
+              <input type="text" id="new_username" placeholder="e.g. member@gmail.com" required>
+            </div>
+            <div>
+              <label><strong>Full Name:</strong></label>
+              <input type="text" id="new_fullname" placeholder="e.g. Abebe Bikila" required>
+            </div>
+            <div>
+              <label><strong>Role:</strong></label>
+              <select id="new_role">
+                <option value="members">Member</option>
+                <option value="finance">Finance Officer</option>
+                <option value="seceratery">Secretary</option>
+                <option value="admin">System Admin</option>
+              </select>
+            </div>
+            <div>
+              <label><strong>Default Password:</strong></label>
+              <input type="password" id="new_password" placeholder="Defaults to 123456">
+            </div>
+          </div>
+          <button type="submit" class="btn" style="border:none; cursor:pointer; padding: 10px 20px;">➕ Add User Account</button>
+        </form>
+      </div>
+
+      <!-- All Registered Users Table Card -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+          <div>
+            <h3 style="margin:0;">Registered System Users</h3>
+          </div>
+          
+          <!-- Dedicated Toggle Button -->
+          <button class="toggle-users-btn" onclick="toggleUsersSection()" id="usersToggleBtn">
+            👥 View Registered System Users
+          </button>
+        </div>
+
+        <!-- Hidden Section Containing Table -->
+        <div id="usersSection" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+          <div id="users-table-container">
+            <p style="color:#666;">Loading users list...</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © Lintala Edir | Admin
+  </footer>
+
+  <!-- JavaScript to Handle Layout Toggles and CRUD Operations -->
+  <script>
+    let isUsersLoaded = false;
+
+    function toggleUsersSection() {
+      const usersSec = document.getElementById('usersSection');
+      const toggleBtn = document.getElementById('usersToggleBtn');
+
+      if (usersSec.style.display === 'none') {
+        usersSec.style.display = 'block';
+        toggleBtn.innerText = '🔒 Hide Registered System Users';
+        
+        if (!isUsersLoaded) {
+          loadUsersList();
+          isUsersLoaded = true;
+        }
+      } else {
+        usersSec.style.display = 'none';
+        toggleBtn.innerText = '👥 View Registered System Users';
+      }
+    }
+
+    // Fetch and render user list with clean read-only labels by default
+    function loadUsersList() {
+      fetch('../get_users_list.php?action=list')
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            const container = document.getElementById('users-table-container');
+
+            if (data.users && data.users.length > 0) {
+              let tableHTML = `
+                <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+                  <thead>
+                    <tr style="background-color:#0f766e; color:white; text-align:left;">
+                      <th style="padding:12px; border:1px solid #ddd; width:50px;">ID</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Full Name</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Username (Email)</th>
+                      <th style="padding:12px; border:1px solid #ddd;">Password</th>
+                      <th style="padding:12px; border:1px solid #ddd;">System Role</th>
+                      <th style="padding:12px; border:1px solid #ddd; width:170px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+              `;
+
+              data.users.forEach(user => {
+                let formattedRole = user.role;
+                if (user.role === 'members' || user.role === 'member') formattedRole = 'Member';
+                else if (user.role === 'finance') formattedRole = 'Finance';
+                else if (user.role === 'seceratery' || user.role === 'secretary') formattedRole = 'Secretary';
+                else if (user.role === 'admin') formattedRole = 'Admin';
+
+                tableHTML += `
+                  <tr id="row_${user.id}" style="border-bottom:1px solid #ddd;">
+                    <td style="padding:12px; border:1px solid #ddd;">${user.id}</td>
+                    
+                    <!-- Full Name Display / Input -->
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      <span id="view_fullname_${user.id}"><strong>${user.full_name}</strong></span>
+                      <input type="text" id="fullname_${user.id}" class="edit-input" value="${user.full_name}" style="display:none;">
+                    </td>
+
+                    <!-- Username Display / Input -->
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      <span id="view_username_${user.id}">${user.username}</span>
+                      <input type="text" id="username_${user.id}" class="edit-input" value="${user.username}" data-original="${user.username}" style="display:none;">
+                    </td>
+
+                    <!-- Password Display / Input -->
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      <span id="view_password_${user.id}" style="color:#888;">••••••••</span>
+                      <input type="password" id="password_${user.id}" class="edit-input" placeholder="Leave blank to keep" style="display:none;">
+                    </td>
+
+                    <!-- System Role Display / Input -->
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      <span id="view_role_${user.id}" class="role-badge">${formattedRole}</span>
+                      <select id="role_${user.id}" class="role-select" style="display:none;">
+                        <option value="members" ${user.role === 'members' || user.role === 'member' ? 'selected' : ''}>Member</option>
+                        <option value="finance" ${user.role === 'finance' ? 'selected' : ''}>Finance</option>
+                        <option value="seceratery" ${user.role === 'seceratery' || user.role === 'secretary' ? 'selected' : ''}>Secretary</option>
+                        <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                      </select>
+                    </td>
+
+                    <!-- Action Buttons -->
+                    <td style="padding:12px; border:1px solid #ddd;">
+                      <button id="btn_edit_${user.id}" class="action-btn-edit" onclick="enableRowEdit(${user.id})">✏️ Edit</button>
+                      <button id="btn_update_${user.id}" class="action-btn-update" onclick="updateUserFull(${user.id})" style="display:none;">💾 Save</button>
+                      <button class="action-btn-danger" onclick="deleteUser('${user.username}')">🗑️ Delete</button>
+                    </td>
+                  </tr>
+                `;
+              });
+
+              tableHTML += '</tbody></table>';
+              container.innerHTML = tableHTML;
+            } else {
+              container.innerHTML = `<p style="padding:10px; color:#666;">No user accounts found.</p>`;
+            }
+          } else {
+            alert("Unauthorized access.");
+            window.location.href = '../Login.html';
+          }
+        })
+        .catch(err => console.error("Error loading users:", err));
+    }
+
+    // Toggle a single row into edit mode
+    function enableRowEdit(userId) {
+      document.getElementById(`view_fullname_${userId}`).style.display = 'none';
+      document.getElementById(`fullname_${userId}`).style.display = 'inline-block';
+
+      document.getElementById(`view_username_${userId}`).style.display = 'none';
+      document.getElementById(`username_${userId}`).style.display = 'inline-block';
+
+      document.getElementById(`view_password_${userId}`).style.display = 'none';
+      document.getElementById(`password_${userId}`).style.display = 'inline-block';
+
+      document.getElementById(`view_role_${userId}`).style.display = 'none';
+      document.getElementById(`role_${userId}`).style.display = 'inline-block';
+
+      document.getElementById(`btn_edit_${userId}`).style.display = 'none';
+      document.getElementById(`btn_update_${userId}`).style.display = 'inline-block';
+    }
+
+    // Add new user function
+    function createNewUser(e) {
+      e.preventDefault();
+      const username = document.getElementById('new_username').value;
+      const full_name = document.getElementById('new_fullname').value;
+      const role = document.getElementById('new_role').value;
+      const password = document.getElementById('new_password').value || '123456';
+
+      fetch('../get_users_list.php?action=add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, full_name, role, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        if (data.status === 'success') {
+          document.getElementById('addUserForm').reset();
+          loadUsersList();
+        }
+      });
+    }
+
+    // Full update function
+    function updateUserFull(userId) {
+      const usernameInput = document.getElementById(`username_${userId}`);
+      const original_username = usernameInput.getAttribute('data-original');
+      const new_username = usernameInput.value.trim();
+      const full_name = document.getElementById(`fullname_${userId}`).value.trim();
+      const role = document.getElementById(`role_${userId}`).value;
+      const password = document.getElementById(`password_${userId}`).value;
+
+      if (!new_username || !full_name) {
+        alert("Full Name and Username cannot be empty.");
+        return;
+      }
+
+      fetch('../get_users_list.php?action=update_user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: userId,
+          original_username: original_username,
+          username: new_username,
+          full_name: full_name,
+          role: role,
+          password: password
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message || "User updated successfully!");
+        if (data.status === 'success') {
+          loadUsersList();
+        }
+      })
+      .catch(err => {
+        console.error("Error updating user details:", err);
+        alert("Failed to connect to backend server.");
+      });
+    }
+
+    // Delete user account
+    function deleteUser(username) {
+      if (!confirm(`Are you sure you want to permanently delete user "${username}"?`)) return;
+
+      fetch('../get_users_list.php?action=delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        if (data.status === 'success') {
+          loadUsersList();
+        }
+      });
+    }
+  </script>
+
+
+<script src="../responsive.js"></script>
+
+</body>
+</html>

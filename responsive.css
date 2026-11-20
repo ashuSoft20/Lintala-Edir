@@ -1,0 +1,475 @@
+/* =========================================
+   LINTALA EDIR - GLOBAL RESPONSIVE CSS
+   Works for desktop, tablet and mobile
+========================================= */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+body.has-fixed-page-header {
+    padding-top: var(--fixed-header-height, 0px);
+}
+
+img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+}
+
+button, input, select, textarea {
+    font: inherit;
+}
+
+button, .btn, a {
+    touch-action: manipulation;
+}
+
+/* HEADER */
+
+header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    width: 100%;
+    min-width: 0;
+    position: sticky !important;
+    top: 0;
+    z-index: 2001;
+}
+
+body.has-fixed-page-header header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+header h1,
+header h2,
+header h3 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+#welcome-user {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+#welcome-user-photo {
+    width: 48px !important;
+    height: 48px !important;
+    cursor: zoom-in;
+}
+
+.header-profile-photo {
+    width: 48px;
+    height: 48px;
+    margin-right: 8px;
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: middle;
+}
+
+.header-photo-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.header-photo-lightbox.open {
+    display: flex;
+}
+
+.header-photo-lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+@media (min-width: 701px) {
+    header > .notification-container {
+        margin-left: auto;
+    }
+}
+
+/* MAIN LAYOUT */
+
+.main-layout {
+    display: flex !important;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 0;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    flex: 0 0 250px;
+    width: 250px;
+    min-width: 0;
+}
+
+/* MAIN CONTENT */
+
+.content {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+/* CARDS */
+
+.card,
+.welcome-box,
+.statement-card,
+.activation-box {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.cards,
+.statement-grid,
+.form-grid {
+    grid-template-columns:
+        repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+
+/* FORMS */
+
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+/* RESPONSIVE TABLES */
+
+.responsive-table-wrapper {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+.responsive-table-wrapper table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+}
+
+/* MOBILE MENU BUTTON */
+
+.mobile-menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 9px 13px;
+    border: 0;
+    border-radius: 8px;
+    background: #0f766e;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ACCESSIBILITY */
+
+.mobile-menu-toggle:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(15,118,110,.35);
+    outline-offset: 2px;
+}
+
+/* TABLET */
+
+@media (max-width: 900px) {
+
+    .main-layout {
+        gap: 0;
+    }
+
+    .sidebar {
+        flex-basis: 220px;
+        width: 220px;
+    }
+
+    .content {
+        padding: clamp(14px, 2.5vw, 24px) !important;
+    }
+}
+
+/* SMARTPHONE */
+
+@media (max-width: 700px) {
+
+    header {
+        align-items: center !important;
+        justify-content: flex-start !important;
+        flex-wrap: nowrap !important;
+        gap: 12px !important;
+        padding: 14px !important;
+    }
+
+    header h2 {
+        font-size: clamp(18px, 5vw, 22px) !important;
+        line-height: 1.25;
+    }
+
+    header > .mobile-menu-toggle + h1,
+    header > .mobile-menu-toggle + h2,
+    header > .mobile-menu-toggle + h3 {
+        flex: 0 1 auto;
+    }
+
+    #welcome-user {
+        width: auto;
+        margin-left: auto;
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    #notificationDropdown {
+        position: fixed !important;
+        top: 76px !important;
+        right: 8px !important;
+        left: auto !important;
+        width: 320px !important;
+        max-width: calc(100vw - 16px) !important;
+        max-height: 45vh !important;
+        overflow-y: auto !important;
+    }
+
+    #notificationList {
+        max-height: 30vh !important;
+        overflow-y: auto !important;
+    }
+
+    #notificationList > div h5 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #notificationList > div p {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        overflow: hidden;
+        overflow-wrap: anywhere;
+    }
+
+    .mobile-menu-toggle {
+        display: inline-flex;
+        position: relative;
+        z-index: 2001;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        font-size: 24px;
+    }
+
+    .main-layout {
+        display: block !important;
+    }
+
+    .sidebar {
+        display: flex !important;
+        flex-direction: column;
+        gap: 4px;
+        position: fixed !important;
+        top: var(--fixed-header-height, 0px);
+        bottom: 0;
+        left: 0;
+        width: 300px !important;
+        max-width: 85vw;
+        height: auto;
+        max-height: calc(100vh - var(--fixed-header-height, 0px));
+        padding: 12px !important;
+        border-radius: 0 !important;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+        z-index: 2000;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        visibility: hidden;
+        pointer-events: none;
+        transition: transform 0.25s ease, visibility 0s linear 0.25s;
+    }
+
+    .sidebar.mobile-menu-open {
+        transform: translateX(0);
+        visibility: visible;
+        pointer-events: auto;
+        transition: transform 0.25s ease;
+    }
+
+    .sidebar a {
+        display: block;
+        width: 100%;
+        min-height: 42px;
+        padding: 11px 12px !important;
+    }
+
+    .sidebar h3 {
+        margin: 4px 10px 8px;
+    }
+
+    .content {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 14px !important;
+    }
+
+    .cards,
+    .statement-grid {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 14px !important;
+    }
+
+    .card,
+    .welcome-box,
+    .statement-card,
+    .activation-box {
+        padding: 16px !important;
+        border-radius: 10px;
+    }
+
+    .welcome-box h2 {
+        font-size: 20px !important;
+        line-height: 1.3;
+    }
+
+    .content h2 {
+        overflow-wrap: anywhere;
+    }
+
+    .form-grid {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    .form-grid > div,
+    .form-group {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .filter-bar,
+    .activation-box > div {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100%;
+        gap: 10px !important;
+    }
+
+    .filter-bar > div,
+    .activation-box > div > * {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100% !important;
+        min-height: 42px;
+        font-size: 16px !important;
+    }
+
+    button,
+    .btn {
+        min-height: 42px;
+        max-width: 100%;
+    }
+
+    .print-btn {
+        float: none !important;
+        margin-bottom: 12px;
+    }
+
+    footer {
+        padding: 14px !important;
+        text-align: center;
+    }
+}
+
+/* VERY SMALL SMARTPHONES */
+
+@media (max-width: 380px) {
+
+    .content {
+        padding: 10px !important;
+    }
+
+    .card,
+    .welcome-box,
+    .statement-card,
+    .activation-box {
+        padding: 12px !important;
+    }
+
+    header {
+        padding: 11px !important;
+    }
+}
+
+/* PRINT */
+
+@media print {
+
+    body.has-fixed-page-header {
+        padding-top: 0 !important;
+    }
+
+    body.has-fixed-page-header header {
+        position: static !important;
+    }
+
+    .mobile-menu-toggle {
+        display: none !important;
+    }
+
+    .responsive-table-wrapper {
+        overflow: visible !important;
+    }
+}

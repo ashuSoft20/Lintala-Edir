@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secretary Profile Settings - Lintala Edir</title>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="../dashBoard.css">
+  <link rel="stylesheet" href="../responsive.css">
+
+  <style>
+    .profile-card {
+      max-width: 650px;
+      margin: 0 auto;
+    }
+    .avatar-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #0f766e;
+      object-fit: cover;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+    .form-group input[readonly] {
+      background-color: #f1f5f9;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+    .alert-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: none;
+      font-weight: bold;
+    }
+    .alert-success { background-color: #dcfce7; color: #15803d; }
+    .alert-danger { background-color: #fee2e2; color: #b91c1c; }
+  </style>
+
+</head>
+<body class="secretary-theme">
+
+  <!-- Header -->
+  <header style="display: flex; justify-content: space-between; align-items: center; position: relative;">
+    <h2>LinGEdir | Secretary</h2>
+    <div id="welcome-user" style="font-weight: 500;">👤 Loading...</div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+      <h3>Secretary Menu</h3>
+      <a href="secretaryDashboard.html">🏠 Home / Dashboard</a>
+       <a href="system_users.html">👤👤 System Users</a>
+      <a href="announcements.html">📢 Announcements</a>
+      <a href="meeting_minutes.html">📝 Meeting Minutes</a>
+      <a href="profile.html" style="background:#0f766e; color: white;">👤 Profile Settings</a>
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+
+      <div class="welcome-box">
+        <h2>Secretary Profile Settings</h2>
+        <p>Update your personal information, manage contact phone numbers, and modify your login password.</p>
+      </div>
+
+      <!-- Settings Form Card -->
+      <div class="card profile-card">
+        <h3>Update Secretary Profile Details</h3>
+        <br>
+
+        <div id="alertBox" class="alert-message"></div>
+
+        <form id="profileForm" enctype="multipart/form-data" onsubmit="saveProfileChanges(event)">
+          
+          <!-- Avatar Preview and Upload -->
+          <div class="avatar-upload">
+            <img id="avatarImage" src="https://via.placeholder.com/120?text=Secretary" alt="Secretary Profile Picture" class="avatar-preview">
+            <label for="profile_photo" class="btn" style="padding: 6px 14px; font-size: 13px; cursor: pointer; margin-top: 5px; background: #0f766e; color: white; border-radius: 6px;">
+              📸 Change Profile Photo
+            </label>
+            <input type="file" id="profile_photo" name="profile_photo" accept="image/*" style="display: none;" onchange="previewImage(event)">
+          </div>
+
+          <!-- Secretary Username (Readonly) -->
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" readonly>
+          </div>
+
+          <!-- Full Name -->
+          <div class="form-group">
+            <label for="full_name">Secretary Full Name:</label>
+            <input type="text" id="full_name" name="full_name" placeholder="Enter full name" required>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-group">
+            <label for="phone_number">Contact Phone Number:</label>
+            <input type="text" id="phone_number" name="phone_number" placeholder="e.g. 0911223344" required>
+          </div>
+
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;">
+
+          <h4 style="margin-bottom: 15px; color: #374151;">Update Security Password</h4>
+
+          <!-- Current Password Field -->
+          <div class="form-group">
+            <label for="currentPassword">Current Password:</label>
+            <input type="password" id="currentPassword" name="current_password" placeholder="Enter current password">
+          </div>
+
+          <!-- New Password Field -->
+          <div class="form-group">
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="new_password" placeholder="Enter new password">
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div class="form-group">
+            <label for="confirmPassword">Confirm New Password:</label>
+            <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm new password">
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="saveBtn" class="btn" style="width: 100%; padding: 12px; font-size: 16px; border: none; cursor: pointer; background: #0f766e; color: white; border-radius: 6px; font-weight: bold;">
+            💾 Save Profile Changes
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © Lintala Edir | Secretary
+  </footer>
+  
+  <!-- JavaScript Section -->
+  <script>
+    // Fetch profile data on page initialization
+    function loadProfileData() {
+      fetch('../update_profile.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            document.getElementById('welcome-user').innerText = "👤 " + data.full_name;
+            document.getElementById('username').value = data.username;
+            document.getElementById('full_name').value = data.full_name;
+            document.getElementById('phone_number').value = data.phone_number || '';
+            
+            if (data.profile_photo) {
+              document.getElementById('avatarImage').src = '../' + data.profile_photo;
+            }
+          } else {
+            window.location.href = '../Login.html';
+          }
+        })
+        .catch(err => console.error("Error loading profile:", err));
+    }
+
+    // Image preview handler
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = function() {
+        const output = document.getElementById('avatarImage');
+        output.src = reader.result;
+      };
+      if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    }
+
+    // Submit form via FormData (supports text fields + image upload)
+    function saveProfileChanges(e) {
+      e.preventDefault();
+
+      const newPass = document.getElementById('newPassword').value;
+      const confirmPass = document.getElementById('confirmPassword').value;
+      const currentPass = document.getElementById('currentPassword').value;
+      const alertBox = document.getElementById('alertBox');
+      const saveBtn = document.getElementById('saveBtn');
+
+      if (newPass && newPass !== confirmPass) {
+        alertBox.style.display = 'block';
+        alertBox.className = 'alert-message alert-danger';
+        alertBox.innerText = 'New passwords do not match!';
+        return;
+      }
+
+      if (newPass && !currentPass) {
+        alertBox.style.display = 'block';
+        alertBox.className = 'alert-message alert-danger';
+        alertBox.innerText = 'Current password is required to change password.';
+        return;
+      }
+
+      const form = document.getElementById('profileForm');
+      const formData = new FormData(form);
+
+      saveBtn.disabled = true;
+      saveBtn.innerText = "Saving Changes...";
+
+      fetch('../update_profile.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(res => {
+        saveBtn.disabled = false;
+        saveBtn.innerText = "💾 Save Profile Changes";
+        alertBox.style.display = 'block';
+
+        if (res.status === 'success') {
+          alertBox.className = 'alert-message alert-success';
+          alertBox.innerText = res.message;
+          document.getElementById('currentPassword').value = '';
+          document.getElementById('newPassword').value = '';
+          document.getElementById('confirmPassword').value = '';
+          if (formData.get('full_name')) {
+            document.getElementById('welcome-user').innerText = "👤 " + formData.get('full_name');
+          }
+        } else {
+          alertBox.className = 'alert-message alert-danger';
+          alertBox.innerText = res.message || "An error occurred while updating profile.";
+        }
+      })
+      .catch(err => {
+        console.error("Profile update error:", err);
+        saveBtn.disabled = false;
+        saveBtn.innerText = "💾 Save Profile Changes";
+        alertBox.style.display = 'block';
+        alertBox.className = 'alert-message alert-danger';
+        alertBox.innerText = "Connection error. Could not update secretary profile.";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadProfileData);
+  </script>
+
+<script src="../responsive.js"></script>
+</body>
+</html>

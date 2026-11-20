@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Lintala Edir</title>
+ <link rel="stylesheet" href="../dashBoard.css">
+ <link rel="stylesheet" href="../responsive.css">
+
+</head>
+<body>
+
+  <header>
+    <h2>LinGEdir | Admin</h2>
+    <div id="welcome-user">
+      <img id="welcome-user-photo" alt="" style="display:none; width:32px; height:32px; border-radius:50%; object-fit:cover; vertical-align:middle;">
+      <span id="welcome-user-name">Loading...</span>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <div class="sidebar">
+      <h3>Admin Menu</h3>
+      <a href="admin_dashboard.html">🏠 Home</a>
+      <a href="manage_users.html">👥 Manage Users</a>
+      <a href="association_settings.html">⚙️ Association Settings</a>
+      <a href="system_reports.html">📊 System Reports</a>
+      <a href="system_users.html">👤👤 System Users</a>
+      <a href="profile.html">👤 Profile Settings</a>
+
+      
+      <a href="../Login.html">🚪 Logout</a>
+    </div>
+
+    <div class="content">
+      <div class="welcome-box">
+        <h2>Administrator Control Center</h2>
+        <p>Oversee system roles, manage overall users, and Analyze system status.</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <h3>Total Registered Users</h3>
+          <p>Active Members</p>
+          <a href="manage_users.html" class="btn">Manage Users</a>
+        </div>
+        <div class="card">
+          <h3>System Security</h3>
+          <p>Active Users</p>
+          <a href="system_users.html" class="btn">System Users</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>© Lintala Edir | Admin</footer>
+
+  <script>
+    fetch('../update_profile.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          document.getElementById('welcome-user-name').textContent = data.full_name;
+          if (data.profile_photo) {
+            const photo = document.getElementById('welcome-user-photo');
+            photo.src = '../' + data.profile_photo;
+            photo.style.display = 'inline-block';
+          }
+        } else {
+          window.location.href = '../Login.html';
+        }
+      });
+  </script>
+
+<script src="../responsive.js"></script>
+
+</body>
+</html>
